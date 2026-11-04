@@ -30,11 +30,29 @@ The model is one component. The application decides which context, tools, safety
 | Multimodal model | A model that accepts or produces more than one data type | A prompt can include text and an image |
 | Diffusion model | A generative model that learns to create data through a noise-removal process | Common in image generation |
 
+### How a transformer generates text
+
+Read the diagram from bottom to top: input tokens become numeric representations, attention helps the model use relationships among tokens, and the output is a probability distribution over possible next tokens. For a prompt such as “The café serves,” the model might assign different probabilities to continuations such as “coffee” and “breakfast.” A decoding method selects the next token, adds it to the sequence, and repeats. Sampling does not always select the highest-probability token, and ordinary inference does not change the model's learned weights.
+
+![A simplified transformer diagram shows input tokens, embeddings, attention in encoder and decoder blocks, and an output probability distribution over possible next tokens.](visuals-diagrams/transformer-encoder-decoder-self-attention.png)
+
+*Source: 2024 personal study notes, PDF p. 76. This is a simplified encoder–decoder example; many text-generating LLMs use a decoder-only architecture. The play icon is part of the original static screenshot. The input strip is only part of the context budget described below.*
+
 ### Tokens and context windows
 
 A **context window** is the maximum token capacity a model can process in a request, covering input and output under the model's rules. Input may include system instructions, conversation history, retrieved passages, tool descriptions, and the user's message.
 
 Longer context can raise cost and latency. It can also dilute relevant evidence. Send the smallest set of trustworthy context that supports the task, and reserve enough output tokens for the answer.
+
+### Worked example: allocating a context window
+
+![A hypothetical 1,000-token context budget contains 100 instruction tokens, 50 question tokens, 250 history tokens, 400 source-passage tokens, and 200 tokens of output capacity. Removing 150 irrelevant history tokens changes history from 250 to 100 and frees 150 tokens.](visuals-diagrams/context-budget.png)
+
+*This is a hypothetical combined capacity limit. Output capacity is not a claim that unused tokens are billed as generated output.*
+
+Assume a hypothetical model allows **1,000 tokens** for combined input and output. A **token** is a unit a model processes, often a word fragment, word, or punctuation mark. The request contains **100 instruction tokens**, **50 question tokens**, **250 history tokens**, and **400 source-passage tokens**. Those inputs total **800**, leaving **200 tokens of capacity** for the response under this example’s rules.
+
+The application finds that **150 history tokens** describe an unrelated topic. Removing them reduces history from **250 to 100** and makes **150 tokens** available for relevant material or additional output. Sending the full history would consume capacity without necessarily improving the answer. Real models have different input, output, and context rules, so these figures illustrate budgeting rather than an actual service limit. Reserved response room also does not mean unused capacity is automatically billed as generated output.
 
 ## Chunking, embeddings, and vectors
 
@@ -49,6 +67,16 @@ Tokenization and chunking are different. The model or tokenizer divides text int
 Small chunks may retrieve precise facts but lose surrounding meaning. Large chunks preserve context but consume more tokens and may return unrelated text. Teams evaluate chunk size and overlap against representative questions.
 
 Amazon Bedrock Knowledge Bases can retrieve information from organization data and use it to generate grounded responses. See [Knowledge Bases for Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html).
+
+### Worked example: finding passages with similar meaning
+
+![On an illustrative two-dimensional plot, query How do I get my money back at (0.8,0.2) sits close to refund passage A at (0.9,0.2) and return passage B at (0.8,0.3), while network-encryption passage C at (0.1,0.9) is far away.](visuals-diagrams/semantic-embeddings.png)
+
+*The plotted coordinates are invented for explanation; they are not actual embedding-model output or universal meaning axes.*
+
+A user asks, **“How do I get my money back?”** The collection contains passage A, “Refunds within 30 days”; passage B, “Return an item for reimbursement”; and passage C, “Network encryption guide.” An **embedding** represents text as a numerical vector, an ordered list of numbers that can capture aspects of meaning.
+
+The diagram invents two-number vectors: query **(0.8, 0.2)**, A **(0.9, 0.2)**, B **(0.8, 0.3)**, and C **(0.1, 0.9)**. Under ordinary straight-line distance in this toy space, A and B are nearby while C is far away. Retrieval can therefore surface the refund passages even though they use different words from the question. Exact keyword matching might miss that relationship. Real embeddings generally use many dimensions and a selected similarity measure. Proximity alone does not establish that a passage is current, authorized, or factually correct.
 
 ## GenAI use cases
 
@@ -78,6 +106,12 @@ GenAI can perform translation and recommendations, but a purpose-built service o
 | Feedback | Which user and system signals should improve prompts, context, evaluations, or the model? |
 
 Most application teams select an existing FM instead of pretraining one. Pretraining has the greatest data and compute burden. Fine-tuning starts from pretrained weights and adapts them.
+
+![Broad data is used to pretrain a foundation model, which can then be adapted for tasks such as text generation, summarization, information extraction, image generation, chat, and question answering.](visuals-diagrams/foundation-model-pretraining-and-adaptation.png)
+
+*Source: 2024 personal study notes, PDF p. 17. The tasks are examples across foundation models; a particular model's supported modalities and capabilities determine which it can perform.*
+
+For example, a café can start with a pretrained language model and use instructions and examples to draft menu descriptions. If a stable writing style needs further improvement, the team might fine-tune a supported model on approved descriptions. “Adapt” is the broad idea: prompting leaves weights unchanged, while fine-tuning updates them.
 
 Feedback should flow into controlled evaluation. Raw user feedback should not change a production model without review, testing, and release controls.
 

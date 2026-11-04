@@ -20,6 +20,18 @@ The fastest exam method is to finish this sentence: "The audience needs to under
 
 A model can have strong transparency documentation and weak per-output explainability. A black-box model can support post-hoc explanations without exposing its internal logic. An LLM that writes a convincing explanation of its own answer has generated more text; it has not supplied a faithful execution trace.
 
+### Worked example: three views of a muffin forecast
+
+![Three views of a café demand model distinguish transparency about the system, interpretability of a small decision tree, and an explanation of one event-day prediction of 140 muffins.](visuals-diagrams/transparency-explainability.png)
+
+*System facts, readable internal logic, and evidence for one output answer different questions.*
+
+A café uses a small decision tree to forecast tomorrow's muffin demand. In this illustrative tree, an event day leads to a prediction of 140 muffins; a day without an event leads to 80. Tomorrow has an event, so the model selects the 140-muffin leaf.
+
+**Transparency** supplies system facts: the café team owns version 2, its purpose is stock planning, and its evaluation excludes holiday periods. **Interpretability** concerns the model's readable internal logic: a person can follow the event-day branch directly. **Explainability** concerns this particular result: the recorded input was “event = yes,” and that branch produced 140.
+
+Publishing the owner and test results would not, by itself, explain an individual forecast. Conversely, showing one branch would not document the system's limitations. The numbers illustrate model behavior, not a guarantee that customers will purchase exactly 140 muffins.
+
 ## Transparent and opaque models
 
 | Model or approach | Typical interpretability | What a person can inspect | Limitation |
@@ -62,6 +74,18 @@ A model card is a standardized governance record. It can capture:
 Model Cards improve transparency and auditability. They do not calculate feature attribution and do not prove that a model is unbiased. Start the card during problem definition, update it through development, and version it when model facts change.
 
 AWS AI Service Cards play a related but different role. AWS publishes them for selected AWS AI services. Use SageMaker Model Cards for models that your organization documents and governs.
+
+### Worked example: documentation is not feature attribution
+
+![A model card documents a café forecasting model owner, version, intended use, and limits. Beside it, an illustrative feature-attribution waterfall adds a baseline of 80 muffins, 40 for an event, and 20 for sunny weather to reach 140.](visuals-diagrams/model-card-local-explanation.png)
+
+*The card describes the model; the attribution describes one prediction relative to a baseline.*
+
+The café now uses a more complex forecasting model. Its **model card** records version 3, the stock-planning purpose, the owner, evaluation results, and a warning about unusual holidays. This is a durable governance record, not a calculation of why one prediction occurred.
+
+For forecast F-27, a separate explanation method supplies illustrative **feature attributions**: an 80-muffin baseline, plus 40 attributed to the local event, plus 20 attributed to sunny weather, producing 140. A feature is an input such as weather. An attribution estimates that input's contribution under the explanation method; the baseline is its reference prediction.
+
+The diagram makes the arithmetic visible, but the contributions do not establish causation. Removing the event would not necessarily reduce real sales by exactly 40. SageMaker Model Cards can hold model documentation; a supported explanation method produces the per-prediction attribution. The two artifacts complement each other.
 
 ## SageMaker Clarify
 

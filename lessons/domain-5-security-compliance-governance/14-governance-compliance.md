@@ -26,6 +26,18 @@ For example, a residency obligation may lead to a policy that restricts processi
 
 A service can support compliance. It does not decide which laws apply or certify the customer's workload by itself.
 
+### Worked example: approving a book recommendation model
+
+![A bookshop release process connects a rule requiring approval to a deployment gate, the version 2 release, saved evaluation and approval records, a reviewer check, and correction of a missing record.](visuals-diagrams/governance-evidence-chain.png)
+
+*A governance rule becomes verifiable when a named control produces records that someone reviews.*
+
+A bookshop sets an internal rule: a new recommendation model must pass evaluation and receive the owner's approval before production deployment. This is a **policy**, a written requirement for the team. A deployment gate checks for an approved release record; that gate is the **control** enforcing the rule.
+
+For version 2, the team saves evaluation report E-27, approval A-27, and deployment record D-27, each tied to the same model version. Those records are **evidence**: they show what was tested, who approved it, and what was released. A reviewer can connect the chain instead of relying on a verbal promise.
+
+If an approval record is missing, the release stays blocked until the owner resolves the gap. Later review can also reveal that the control itself needs improvement. The example concerns an internal policy; having these records does not automatically establish compliance with every external obligation.
+
 ## Governance, compliance, and security
 
 | Term | Main question |
@@ -65,6 +77,18 @@ This distinction appears often on AWS exams.
 | "Store selected prompt and completion payloads." | Bedrock model invocation logging, not CloudTrail alone |
 
 Config describes resource state and evaluates configuration. CloudTrail describes API activity. CloudTrail Event history exists without a trail and shows the previous 90 days of management events in the current Region; it does not show data events. Create a trail or event data store to retain events beyond that window and configure the management or data-event types you need. Use Config and CloudTrail together to connect a change to the actor who made it.
+
+### Worked example: three different audit questions
+
+![Three evidence sources answer different questions. CloudTrail records a role changing bucket settings at 14:02. Config records a public-access setting and its configured rule result. Artifact supplies an AWS compliance report about provider controls.](visuals-diagrams/audit-tool-roles.png)
+
+*CloudTrail explains an API event, Config describes recorded resource state, and Artifact supplies AWS provider documents.*
+
+At 14:02, a bookshop administrator changes a storage bucket's public-access settings. The team now has three different questions. “Who made the change?” points to **CloudTrail**, which records AWS API activity, including the acting identity, operation, and time for recorded events.
+
+“What configuration was recorded, and did it meet our rule?” points to **AWS Config**. With the relevant resource recording and rule configured, the team can inspect the setting and its evaluation. A noncompliant result identifies a failed rule; it does not by itself explain the actor's intent.
+
+“What evidence describes AWS's own controls?” points to **AWS Artifact**, where the team obtains an applicable provider report. That report is separate from this bucket change. Combining these artifacts supports an investigation, but none substitutes for the others, and an AWS provider report does not certify the bookshop's application configuration.
 
 ## Amazon Inspector, AWS Artifact, and Trusted Advisor
 

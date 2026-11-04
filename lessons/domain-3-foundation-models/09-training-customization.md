@@ -44,6 +44,18 @@ Start by asking what must change. New facts, task behavior, human preference, an
 
 The relative costs are exam-level comparisons, not price quotes. Model support, dataset size, training duration, hosting, throughput, and region affect the bill.
 
+### Worked example: three requests from one support team
+
+![A requirement branches into three choices: change instructions with prompting, supply current evidence with RAG, or learn stable behavior with fine-tuning. Only fine-tuning changes model weights.](visuals-diagrams/customization-choice.png)
+
+*Choose the method from the requirement and available data, then evaluate the result.*
+
+A shop wants three improvements to its assistant. First, replies should contain three short bullets. That is a change to instructions, so test a clearer **prompt**, the request sent to the model. Second, answers must cite a refund policy that changes weekly. Use **RAG**, which retrieves current evidence and supplies it with the request. Third, the assistant must reliably assign stable support labels such as `damaged_item`; the team has reviewed input-output pairs, including “Broken handle” → `damaged_item`.
+
+For the third need, test prompt and few-shot baselines first. If measured performance remains insufficient, consider supervised **fine-tuning**, training an existing model on labeled examples. This changes model weights, the learned numerical parameters.
+
+Prompting and RAG leave weights unchanged. Fine-tuning does not keep changing policies automatically current. A production assistant can combine these methods, with separate tests for format, factual grounding, and classification behavior.
+
 ## Pre-training builds the base model
 
 Pre-training exposes a model to a vast corpus and trains it to predict missing or next tokens. The data supplies training signals without people labeling every sentence. The process builds language patterns, broad knowledge, and general capabilities.
@@ -134,6 +146,18 @@ Distillation differs from compression through file formats or token trimming. It
 
 Use a break-even view: estimate training cost, expected request volume, per-request savings, quality change, and model-lifecycle cost. A low-volume workload may never recover the customization expense.
 
+### Worked example: teach a smaller ticket classifier
+
+![A teacher generates ticket-label pairs, reviewers curate them, and training updates a smaller student. A separate 100-ticket test compares 98 correct teacher answers with 96 correct student answers against a 95-correct threshold.](visuals-diagrams/teacher-student-distillation.png)
+
+*Illustrative evaluation counts, not a model benchmark. The student must be tested on unseen examples.*
+
+A support team uses a capable but costly model to classify tickets. It wants a smaller model for the same narrow task. In **distillation**, the larger **teacher** produces learning examples and a smaller **student** trains on them. Example pairs might be “Charged twice” → `billing` and “Parcel missing” → `delivery`. Review the teacher’s outputs before training because a teacher can be wrong.
+
+After training, evaluate on 100 **held-out** tickets: examples excluded from training and development choices. In this illustrative result, the teacher gets 98 correct and the student gets 96. The team’s quality threshold was 95, so the student passes this test; it must also meet the team’s safety and cost requirements.
+
+Distillation changes the student’s weights. It is not shortening a prompt or compressing a model file. Training adds upfront expense, so compare expected operating savings and request volume before deciding whether it is worthwhile.
+
 ## Prepare training data
 
 Model quality cannot exceed the quality of the examples and feedback used for training.
@@ -205,6 +229,12 @@ A combined design may use continued pre-training for domain language, fine-tunin
 | Best economic fit | Fast experiments | Changing knowledge | Stable behavior at enough volume | Deep domain need | High-volume narrow task | Model provider scale |
 
 Do not assume that training saves money. Include data labeling, experimentation, failed jobs, evaluation, deployment, monitoring, and future retraining.
+
+![A conceptual comparison moves from prompt engineering through RAG, fine-tuning, continued pretraining, and training a foundation model from scratch, with taller bars suggesting greater effort. The accompanying note corrects the figure's quality label.](visuals-diagrams/foundation-model-customization-tradeoffs.png)
+
+*Source: 2024 personal study notes, PDF p. 107. Read the bars as a rough illustration of potential complexity, time, and cost—not measured values or a guaranteed ordering. Although the original axis includes “quality,” more training does not guarantee a better result. Distillation is omitted from this historical figure and is included in the comparison table above.*
+
+For a café whose opening hours change frequently, retrieving the current hours with RAG may produce a more useful answer than training a model from scratch. Choose the method that addresses the actual problem, then measure quality, safety, latency, and total cost.
 
 ## Scenario practice with reasoning
 

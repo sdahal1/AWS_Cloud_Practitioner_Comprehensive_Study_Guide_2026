@@ -1,0 +1,6 @@
+# Local Remotion dependencies and build output
+tools/lesson-visuals/node_modules
+tools/lesson-visuals/.remotion/
+tools/lesson-visuals/build/
+.DS_Store
+tools/*

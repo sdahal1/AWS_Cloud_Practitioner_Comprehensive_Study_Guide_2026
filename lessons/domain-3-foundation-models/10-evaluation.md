@@ -129,6 +129,18 @@ Compare models with the same prompts, inference settings, retrieval context, and
 
 RAG has a retrieval stage and a generation stage. Diagnose them separately before measuring the whole answer.
 
+### Worked example: separate a retrieval failure from an answer failure
+
+![Three runs show separate retrieval and generation checks: wrong shipping passage, correct refund passage with an unsupported 30-day answer, and correct passage with a supported 14-day answer.](visuals-diagrams/rag-two-stage-evaluation.png)
+
+*Retrieving the right evidence and answering faithfully are separate tests.*
+
+The approved refund policy P-7 allows refunds within 14 days. The evaluation question is “Can I request a refund after 10 days?” The expected evidence is P-7, and the expected answer is yes, with that source cited.
+
+In run A, retrieval returns a shipping timetable. The model never receives the relevant refund passage. Investigate document chunks, search settings, and access filters first. In run B, retrieval returns P-7, but the model says refunds are allowed within 30 days. Retrieval succeeded; generation failed to stay **faithful**, meaning supported by the supplied evidence. Inspect the prompt and model behavior. In run C, the answer correctly states 14 days and cites P-7. Check that the citation opens the supporting passage.
+
+One overall score can hide these different causes. Separate component checks tell you what to repair. A relevant retrieved passage alone does not prove a correct answer.
+
 ### General retrieval metrics
 
 These information-retrieval metrics apply to RAG systems in general. They are not all built-in Amazon Bedrock RAG evaluation metrics.
@@ -223,6 +235,18 @@ A useful estimate includes:
 ```
 
 Cost per raw request can reward a cheap system that fails often. Cost per successful task connects spending to value.
+
+### Worked example: a cheaper first call can cost more overall
+
+![Illustrative stacked costs compare system A at 40 dollars for 60 successful tasks with system B at 30 dollars for 90 successful tasks. Cost per success is about 67 cents versus 33 cents.](visuals-diagrams/cost-per-success.png)
+
+*Illustrative costs, not AWS prices. Include the same cost categories and acceptance rules for both systems.*
+
+Compare two systems on the same 100 eligible support tasks with the same acceptance rules. These are illustrative costs, not AWS prices. System A spends $10 on initial calls, $12 on retries, and $18 on review: $40 total. Only 60 tasks reach a verified correct outcome. Its **cost per completed task** is $40 ÷ 60, about $0.67.
+
+System B spends $18 on initial calls, $4 on retries, and $8 on review: $30 total. It correctly completes 90 tasks, giving $30 ÷ 90, about $0.33 per success. Its initial calls cost more, yet its completed outcomes cost less.
+
+Define completion by checking the result, not by accepting the assistant’s success message. Include the same cost categories for both systems; add infrastructure or other costs when relevant. Apply quality and safety thresholds before selecting on cost, and compare latency, the time users wait, as well.
 
 ## Design an evaluation plan
 

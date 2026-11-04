@@ -6,6 +6,8 @@ AIF-C01 is a foundational exam with **65 questions in 90 minutes**: 50 scored an
 
 This independent community guide contains **14 task-based lessons and all 69 objectives**, organized below in exam order. It is not AWS training and does not contain official AWS exam questions. The objective descriptions condense and rephrase the official AWS wording. AWS can change the outline and in-scope services; the [official exam guide](https://docs.aws.amazon.com/aws-certification/latest/ai-practitioner-01/ai-practitioner-01.html) and [revision history](https://docs.aws.amazon.com/aws-certification/latest/ai-practitioner-01/aif-01-revisions.html) establish the version for an exam date.
 
+Each lesson includes concept diagrams with text descriptions and beginner-friendly worked examples. Images are stored in a `visuals-diagrams` folder inside each domain and embedded beside the relevant explanation, so they display directly when reading a lesson on GitHub. Historical study-note figures include captions explaining their context or limitations.
+
 ## Domain guide
 
 | Domain | Weight | Tasks | Objectives | Lesson folder |

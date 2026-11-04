@@ -41,6 +41,16 @@ A **knowledge cutoff**, when a provider states one, is a training-data boundary 
 
 Grounding can reduce hallucinations but cannot guarantee truth. Retrieved documents may be wrong, stale, malicious, or outside the user's authorization. The application should control source quality and access.
 
+### Worked example: checking a refund answer against evidence
+
+![Without policy evidence an assistant states You have 60 days. With Policy P4 saying Refunds accepted within 30 days, the assistant states 30 days according to P4. The diagram requires checking whether the policy is relevant, current, authorized, and supportive of the claim.](visuals-diagrams/grounded-answers.png)
+
+*Grounding supplies relevant evidence for an answer; checking the citation and its applicability remains a separate step.*
+
+A customer asks, **“How long do I have to request a refund?”** Without the company’s policy, an assistant generates “You have **60 days**.” The wording sounds plausible, but no supplied source supports that rule. **Grounding** means connecting an answer to relevant evidence rather than relying only on the model’s learned patterns.
+
+The application retrieves **Policy P4**, which says, “Refunds accepted within **30 days**.” The model now answers “30 days, according to Policy P4.” The next check is to open P4 and confirm that the cited passage supports the answer and applies to this customer’s purchase. A stale or unrelated policy could still produce a grounded but wrong answer. Lowering randomness would not supply the missing policy. If relevant evidence is unavailable, acknowledging that limitation is more appropriate than inventing a confident deadline.
+
 ## Select a model by constraints
 
 Model selection is a tradeoff, not a leaderboard lookup.
@@ -57,6 +67,16 @@ Model selection is a tradeoff, not a leaderboard lookup.
 | Complexity | Can the team operate customization, agents, and retrieval paths? | Prefer the simplest design that meets the target |
 
 A larger model may improve complex reasoning, but it tends to cost more and may respond more slowly. A smaller model may handle extraction or classification with lower unit cost. Test with real inputs before selecting.
+
+### Worked example: selecting a model under two requirements
+
+![An illustrative plot compares A at 80% correctness and 0.5 seconds, B at 92% and 1.2 seconds, and C at 96% and 2.8 seconds. The acceptable region requires at least 90% correctness and at most 2 seconds. Only B qualifies. Invented costs per 1,000 requests are $1, $3, and $8.](visuals-diagrams/model-tradeoffs.png)
+
+*All prices, measured results, and acceptance thresholds in this example are invented; they are not AWS pricing or product benchmarks.*
+
+A support assistant must answer at least **90 of 100 reviewed questions correctly** and respond within **2 seconds** in this simplified comparison. **Latency** is the time before a result arrives. The team tests three fictional candidates with the same representative questions. A scores **80%** at **0.5 seconds**, B scores **92%** at **1.2 seconds**, and C scores **96%** at **2.8 seconds**. Their invented costs per **1,000 requests** are **$1, $3, and $8**.
+
+First, apply the quality threshold: A fails. Next, apply the latency limit: C fails. B meets both requirements and becomes the candidate to evaluate further. Choosing the cheapest option alone would miss the quality target; choosing the highest score alone would miss the response-time target. Production selection would also examine safety, privacy, integration limits, and the distribution of latency rather than relying on one simplified value.
 
 ## Business value and metrics
 

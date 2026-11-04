@@ -108,6 +108,18 @@ RAG retrieves relevant information and places it in the model's context before g
 
 The offline ingestion path handles steps 1 through 4. The request path handles steps 5 through 8. Updating the source and running ingestion can refresh knowledge without retraining the FM.
 
+### Worked example: answer from the current refund policy
+
+![Two paths join at retrieval: an approved policy is chunked and indexed, and a refund question retrieves policy P-7 before the model answers with its citation.](visuals-diagrams/rag-policy-pipeline.png)
+
+*The retrieved policy supplies the fact. The model’s weights stay unchanged.*
+
+A shop’s approved policy P-7 says, “Refunds are available within 14 days.” A customer asks, “Can I request a refund after 10 days?” The assistant needs the current policy, rather than a remembered rule from model training.
+
+First, split the approved documents into **chunks**, meaning useful passages. Create **embeddings**, numerical representations used to compare meaning, and store the passages with their source IDs and access metadata. When the question arrives, retrieve the relevant passage from documents this user may access. Add P-7 to the model’s prompt. A supported answer is “Yes, within 14 days [P-7].” Open the citation to check it.
+
+If the policy changes, update and re-index the document. **RAG** changes the evidence supplied for a request; fine-tuning changes model weights. Retrieval can still return an irrelevant or stale passage, so the pipeline needs source and answer checks.
+
 ### Amazon Bedrock Knowledge Bases
 
 Amazon Bedrock Knowledge Bases manages much of the RAG workflow, including ingestion, chunking, embeddings, storage integration, retrieval, and response generation. You can retrieve chunks alone for a custom application or use retrieve-and-generate for an answer with source attribution.
@@ -171,6 +183,18 @@ An AI agent combines an FM with instructions, knowledge, tools, and orchestratio
 Amazon Bedrock Agents, now named **Amazon Bedrock Agents Classic**, can use a chosen FM, instructions, action groups, and associated knowledge bases. AWS moved the feature to maintenance on July 30, 2026. Existing customers can continue using it; new customers cannot access it. For a new implementation, evaluate AgentCore Harness, Runtime, Gateway, and related capabilities. An action group in an existing Agents Classic design describes available functions or API operations. Lambda or the calling application can perform the action. Treat model-generated arguments as untrusted input. Validate authorization, types, ranges, and business rules before a tool changes data.
 
 Use an agent for variable, multi-step tasks. Use a fixed workflow for a known sequence that must remain deterministic. Use RAG alone when the user needs an answer rather than an action.
+
+### Worked example: cancel a reservation safely
+
+![A cancellation request flows through a model, an authorization and validation boundary, and a reservation tool. The verified result returns to the model, while another person’s reservation is blocked.](visuals-diagrams/agent-permission-loop.png)
+
+*A tool can change external state. Authorization and validation belong at the tool boundary.*
+
+Maya asks an assistant to cancel reservation R42. An **agent** is a system that can choose tools and use their results to pursue a goal. A **tool** is a callable function, such as looking up or canceling a reservation.
+
+The model first proposes looking up R42. Application code checks Maya’s identity and permission before the lookup runs. The result says R42 belongs to Maya and is active. After the required confirmation, the model proposes cancellation. The application checks ownership, allowed actions, and the reservation ID again before calling the tool. The tool returns “canceled,” and a follow-up check confirms the stored state.
+
+A request to cancel someone else’s R99 is blocked even if the model proposes it. RAG could explain the cancellation policy, but retrieval alone does not cancel anything. A fluent “done” message also cannot prove that the external action succeeded.
 
 ## Scenario practice with reasoning
 

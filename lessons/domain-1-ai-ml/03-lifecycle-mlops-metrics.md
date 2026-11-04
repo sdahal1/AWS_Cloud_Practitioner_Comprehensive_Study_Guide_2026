@@ -16,6 +16,10 @@ A useful sequence is:
 
 A team should define business success before choosing a model metric. A classifier can score well in a notebook and still fail if it costs too much, responds too slowly, or frustrates customers.
 
+![An overview connects the stages of developing and operating a machine learning model.](visuals-diagrams/ml-development-pipeline-overview.png)
+
+*2024 study notes, p. 15. Follow the model from a business need through data, training, evaluation, and production. Monitoring supplies evidence for the next iteration.*
+
 ## Pipeline components
 
 | Stage | Team activity | Typical AWS fit |
@@ -31,6 +35,38 @@ A team should define business success before choosing a model metric. A classifi
 
 Data splitting prevents a model from grading itself on examples it memorized. A common split uses training data to fit parameters, validation data to tune choices, and test data for a final unbiased estimate.
 
+![A detailed machine learning pipeline expands the work needed to prepare data, train, evaluate, deploy, and monitor a model.](visuals-diagrams/ml-development-pipeline-detailed.png)
+
+*2024 study notes, p. 57. This expands the overview above. Each handoff needs a usable output: prepared data for training, an evaluated model for deployment, and production evidence for monitoring.*
+
+### Prepared features and training records
+
+A **feature** is an input used by a model. A café demand model might use day of the week, weather, and recent sales. Reusing the same feature definitions during training and inference helps avoid inconsistent inputs.
+
+![SageMaker Feature Store sends feature data to online and offline stores for serving and historical analysis or training.](visuals-diagrams/feature-store-online-and-offline-workflows.png)
+
+*2024 study notes, p. 38. An online store supports fast lookups of current feature values; an offline store supports historical datasets. The store organizes features; it does not train the prediction model.*
+
+![A sample training dataset places the target label before the input feature columns in a CSV record.](visuals-diagrams/label-first-csv-training-example.png)
+
+*2024 study notes, p. 62. This is one algorithm's input convention, not a universal CSV rule. For a demand example, cups sold could be the target and weather could be a feature. Always follow the chosen algorithm's expected format.*
+
+### Worked example: releasing a ticket-routing model
+
+![A ticket-routing project collects 1,000 labeled tickets and splits them into 700 training, 150 validation, and 150 test examples. Training fits parameters, validation selects the model, and 140 correct test decisions out of 150 give 93.3% accuracy before approval, deployment, and monitoring.](visuals-diagrams/ml-lifecycle.png)
+
+*This split and the 90% acceptance target belong to the illustrative project; neither is a universal recommendation.*
+
+A support team wants to route incoming tickets and defines a **90% final-test accuracy target** for this simplified example. It collects **1,000 labeled tickets** and separates them into **700 training**, **150 validation**, and **150 test** records. The training set fits model parameters. The validation set helps compare models or settings. The test set stays separate until the final performance check, reducing the chance of reporting success on examples that influenced model selection.
+
+The chosen model correctly routes **140 of 150 test tickets**, or about **93.3%**, meeting this project’s stated target. After review, the team deploys that version and monitors actual outcomes. New ticket patterns can trigger investigation and another evaluated version; live feedback does not automatically rewrite the released model. Reusing the same records for training and final testing would provide weaker evidence because the model may have memorized them.
+
+### A project includes more than training
+
+![An illustrative twelve-week machine learning project allocates time across several development stages.](visuals-diagrams/ml-project-timeline-example.png)
+
+*2024 study notes, p. 32. The durations are an example, not a required project length or a study schedule. The useful lesson is that data preparation, evaluation, and deployment take work alongside training.*
+
 ## Sources of foundation models
 
 | Source | Control | Cost and effort | Best fit |
@@ -41,6 +77,10 @@ Data splitting prevents a model from grading itself on examples it memorized. A 
 
 A pretrained model has already learned broad patterns. Fine-tuning adapts its weights with task or domain examples. Training from scratch begins without those pretrained weights and demands much more data and compute.
 
+![Historical SageMaker choices include built-in algorithms, supported frameworks, and custom containers.](visuals-diagrams/sagemaker-model-framework-container-options-2024.png)
+
+*2024 study notes, p. 59. These are implementation choices for a broader ML workflow. A container packages software; it is not itself a foundation model. Framework names and supported versions in this historical figure need checking before use.*
+
 ## Production access: managed API or self-hosted API
 
 | Choice | Team owns | Tradeoff |
@@ -50,12 +90,26 @@ A pretrained model has already learned broad patterns. Fine-tuning adapts its we
 
 Amazon Bedrock provides managed access to foundation models. SageMaker AI can train and host models on managed AWS infrastructure while letting the team choose instances, containers, scaling, and endpoint configuration. That gives more control than a serverless FM API without forcing the team to run raw servers.
 
+![A SageMaker workflow separates notebook development, a training job, the trained model, and a deployed inference endpoint.](visuals-diagrams/sagemaker-notebook-training-endpoint-workflow.png)
+
+*2024 study notes, p. 57. A notebook is where someone develops an experiment. A training job learns model parameters, and an endpoint serves predictions. Creating a notebook alone does not deploy a model.*
+
+![A historical SageMaker chart compares compute instance families and Elastic Inference accelerators.](visuals-diagrams/sagemaker-instance-families-and-elastic-inference-legacy.png)
+
+*2024 study notes, p. 59. Historical infrastructure example: Elastic Inference is no longer available. Use the picture to distinguish compute choices from the model itself; the instance names are not a current deployment recommendation. [AWS availability notice](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters_ec2.html).*
+
 ## Service selection across the lifecycle
 
 - **Amazon SageMaker AI** supports data preparation, model building, training, tuning, deployment, and MLOps workflows. Choose it when the team owns the ML model-development process.
 - **Amazon Bedrock** provides managed access to foundation models and GenAI building blocks. Choose it when an application needs FM inference, knowledge retrieval, safeguards, or agent capabilities without managing model infrastructure.
 - **Amazon Quick** is an AI-powered workspace for business users to analyze data, research, build applications, use agents, and automate work through natural-language interaction. It is an end-user work service, not the place to train an ML model.
 - **Kiro** is an AI coding agent available through an agentic desktop development environment, a CLI, and other surfaces. It supports spec-driven development, built-in and custom agents, steering, and event-driven hooks; it is not a model-training platform.
+
+### A training request starts a separate job
+
+![A historical SageMaker Python SDK example configures and starts a training job.](visuals-diagrams/sagemaker-sdk-training-example-2024.png)
+
+*2024 study notes, p. 62. Read this as a workflow illustration: code supplies the training configuration and data location, then starts managed work. It is not a current copy-and-run example, and writing SDK code is beyond this foundational lesson's purpose.*
 
 ## MLOps concepts
 
@@ -75,6 +129,10 @@ AWS describes SageMaker AI Pipelines as connected steps that can cover preproces
 
 SageMaker Model Monitor can capture inference inputs and outputs, compare tabular statistics or model-quality metrics with baselines, run scheduled monitoring, report constraint violations, and publish metrics to CloudWatch. It supports eligible existing customers, but AWS closed Model Monitor to new customers on July 30, 2026 and does not plan new features. New customers should use current SageMaker and CloudWatch observability options that fit the workload.
 
+![A historical SageMaker MLOps architecture connects data preparation, training, model deployment, and monitoring.](visuals-diagrams/sagemaker-mlops-architecture-2024.png)
+
+*2024 study notes, p. 54. Follow how a model moves through the system and how monitoring closes the loop. Model Monitor is now in maintenance; this figure illustrates the operating pattern rather than a setup available unchanged to every new customer. [AWS maintenance guidance](https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html).*
+
 ## Classification metrics
 
 Start with four counts:
@@ -92,6 +150,32 @@ Start with four counts:
 | F1 score | Harmonic mean of precision and recall | Both false positives and false negatives matter |
 
 A fraud dataset may contain 99.5% legitimate transactions. A model that labels everything legitimate gets 99.5% accuracy and zero fraud recall. Class imbalance makes accuracy a poor headline metric in that case.
+
+### Worked example: which mistakes does a fraud detector make?
+
+![A confusion matrix for 100 transactions contains 8 true positives, 2 false negatives, 12 false positives, and 78 true negatives. Accuracy is 86%, precision is 40%, and recall is 80%.](visuals-diagrams/confusion-metrics.png)
+
+*The denominators explain the difference: all transactions for accuracy, all fraud flags for precision, and all actual fraud for recall.*
+
+A detector reviews **100 transactions**. Ten are actually fraudulent. It flags **8** of those and misses **2**. Of the **90** legitimate transactions, it wrongly flags **12** and correctly clears **78**. A **confusion matrix** organizes these counts by actual outcome and prediction. A false positive is an incorrect fraud flag; a false negative is fraud that was missed.
+
+Accuracy counts every correct decision: `(8 + 78) / 100 = 86%`. Precision asks how trustworthy the fraud flags are: `8 / (8 + 12) = 40%`. Recall asks how much actual fraud the detector finds: `8 / (8 + 2) = 80%`. The same system therefore has three different scores without contradiction. Improving the number of detected fraud cases alone may also increase false alarms. The relevant tradeoff depends on the cost of missed fraud and unnecessary investigation.
+
+### Thresholds and ROC-AUC
+
+Many binary classifiers produce a score. A **threshold** turns that score into a decision. Lowering a fraud-alert threshold generally catches more fraud while also flagging more legitimate transactions. Raising it generally reduces both kinds of flags.
+
+A **ROC curve** shows true-positive rate (recall) against false-positive rate as that threshold varies. **AUC** summarizes how well the model ranks positive examples above negative ones: 1 is perfect ranking, 0.5 is random ranking, and values below 0.5 are possible. AUC is not the percentage of correct predictions at a selected threshold.
+
+![ROC curves compare models with areas under the curve of 0.893, 0.687, and 0.5; the horizontal axis is one minus specificity.](visuals-diagrams/roc-auc-model-comparison.png)
+
+*2024 study notes, p. 46. In this example, the curve nearer the upper-left corner separates the classes better. The diagonal is the random-ranking baseline. [AWS explanation of AUC and decision thresholds](https://docs.aws.amazon.com/machine-learning/latest/dg/binary-model-insights.html).*
+
+**Correction to the original figure below:** its horizontal-axis label equates false-positive rate with specificity. The correct relationship is **false-positive rate = 1 − specificity**. Specificity is `TN / (TN + FP)`; false-positive rate is `FP / (TN + FP)`.
+
+![Original ROC illustration with an incorrect specificity label on the false-positive-rate axis; the correction is stated immediately above.](visuals-diagrams/roc-curve-with-specificity-label-error.png)
+
+*2024 study notes, p. 46, preserved original. Use the corrected relationship above when interpreting this diagram. The preceding ROC comparison uses the correct horizontal-axis wording.*
 
 ## Business metrics
 

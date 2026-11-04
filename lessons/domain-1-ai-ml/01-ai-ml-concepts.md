@@ -18,6 +18,24 @@ Think of the field as nested layers:
 
 A chatbot that answers one question generates content. An agent that checks a calendar, proposes times, and books a meeting uses tools to act.
 
+![Nested categories show deep learning inside machine learning, and machine learning inside artificial intelligence.](visuals-diagrams/ai-ml-deep-learning-hierarchy.png)
+
+*2024 study notes, p. 12. Read the nesting from outside to inside: every deep learning system is ML, but not every ML system uses deep learning.*
+
+![Chess examples compare programmed AI, learning from game examples, and deep learning approaches.](visuals-diagrams/ai-ml-deep-learning-chess-examples.png)
+
+*2024 study notes, p. 12. Chess makes the categories concrete, but self-play is not a definition of deep learning. Reinforcement learning can use a deep neural network or a different model.*
+
+### Where the rules come from
+
+![Traditional programming combines data and explicit rules to produce answers; machine learning uses examples to learn a model that produces answers for new data.](visuals-diagrams/traditional-programming-vs-machine-learning.png)
+
+*2024 study notes, p. 6. A programmed discount rule comes from a developer. A model predicting customer demand learns relationships from historical examples.*
+
+![Traditional programming, machine learning, and deep learning workflows compare manually supplied rules, engineered features, and learned representations.](visuals-diagrams/programming-ml-deep-learning-workflows.png)
+
+*2024 study notes, p. 13. For image classification, a traditional ML workflow might use manually selected visual features; a deep network can learn useful representations during training. Both still need appropriate data and evaluation.*
+
 ## Core terms
 
 | Term | Plain-language definition | Exam cue |
@@ -34,6 +52,10 @@ A chatbot that answers one question generates content. An agent that checks a ca
 | Fairness | The goal of equitable treatment across relevant groups | Compare outcomes and error rates by group |
 | Fit | How well a model learned useful patterns that generalize | Underfitting or overfitting |
 
+![A neural network connects input features through intermediate units to an output.](visuals-diagrams/neural-network-features.png)
+
+*2024 study notes, p. 13. Inputs are measurements or representations of an example. Training adjusts connection weights so the network can combine them into a useful prediction.*
+
 ### Algorithm versus model
 
 A team may use a gradient-boosting **algorithm** during training. Training produces a fitted **model**. The team deploys that model and sends it new records during inference.
@@ -41,6 +63,16 @@ A team may use a gradient-boosting **algorithm** during training. Training produ
 ### Training versus inference
 
 Training consumes prepared data and compute to adjust parameters. Inference applies the finished model. Training may occur once a week, while an online application could run inference thousands of times per minute.
+
+### Worked example: fitting a model and using it
+
+![Training uses pairs of study hours and quiz scores: 1 and 50, 2 and 60, 3 and 70. A toy fitted model is score = 40 + 10 × hours. Inference sends 4 hours to the same model and obtains 80 points.](visuals-diagrams/training-inference.png)
+
+*The numbers are an arithmetic illustration, not evidence that study time alone predicts examination performance.*
+
+Suppose a tiny demonstration dataset contains **(1 hour, 50 points), (2 hours, 60 points), and (3 hours, 70 points)**. During training, a fitting procedure can find the relationship `score = 40 + 10 × hours`. The numbers **40** and **10** are parameters: values that determine the model’s behavior. Here, 10 describes the score increase per additional hour and 40 is the intercept, the formula’s value at zero hours.
+
+Now a new input says **4 hours**. Inference applies the existing formula: `40 + 10 × 4 = 80`. The result is an **80-point prediction**, while the parameters remain unchanged. Adding another input does not itself train a new model. Updating the parameters using additional examples would be training again. This deliberately simple relationship illustrates the distinction; it does not demonstrate real-world predictive accuracy or causation.
 
 ### Underfitting and overfitting
 
@@ -57,6 +89,24 @@ Training consumes prepared data and compute to adjust parameters. Inference appl
 | Reinforcement learning | An agent receives rewards or penalties after actions | Learn a policy for sequential decisions | Choose robot movements through a warehouse |
 
 **Classification** and **regression** are common supervised techniques. Classification predicts a class, such as fraud or legitimate. Regression predicts a continuous number, such as demand or price. **Clustering** is an unsupervised technique that finds groups without predefined labels.
+
+![Unlabeled observations are separated into clusters of similar examples.](visuals-diagrams/unsupervised-clustering.png)
+
+*2024 study notes, p. 9. The groups are discovered from similarity. A cluster number is an identifier, not a verified target label; a person must interpret what each group means.*
+
+![A reinforcement learning agent takes actions in an environment and receives observations and rewards that guide future actions.](visuals-diagrams/reinforcement-learning-feedback-loop.png)
+
+*2024 study notes, p. 11. A warehouse robot tries a movement, observes the new situation, and receives feedback. Over repeated interactions it learns a policy for choosing actions.*
+
+### Worked example: labels, groups, and rewards
+
+![Three learning setups: supervised examples pair session counts 1 and 2 with Needs help and 5 and 6 with Ready; unsupervised learning groups the same unlabeled counts; a robot receives +10 for reaching a goal and −1 for hitting a wall.](visuals-diagrams/learning-methods.png)
+
+*The same observations can support different learning setups depending on whether answers or action rewards are supplied.*
+
+A workshop team records how many practice sessions four learners completed: **1, 2, 5, and 6**. For a supervised example, a teacher also labels the first two learners “Needs help” and the other two “Ready.” A **label** is the answer supplied with a training example. The model learns a relationship between session count and that known answer; four records illustrate the idea but do not establish a reliable readiness predictor.
+
+Remove the labels and ask for similar groups. An unsupervised method can group **1 with 2** and **5 with 6**, but the numbers alone do not prove either group is ready. For reinforcement learning, the diagram changes to a robot: reaching its goal earns **+10**, while hitting a wall earns **−1**. Those rewards guide action choices. This differs from supplying a correct answer for every input.
 
 ## Data types use two separate axes
 

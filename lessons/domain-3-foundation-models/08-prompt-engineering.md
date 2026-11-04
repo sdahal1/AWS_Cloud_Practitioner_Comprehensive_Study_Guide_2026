@@ -40,6 +40,16 @@ A vague request forces the model to infer the contract. A precise prompt makes f
 
 A role can help set perspective, but a role does not replace a direct instruction. "You are a financial analyst" says who the model should emulate. It does not say whether the model should summarize, compare, classify, or calculate.
 
+### Worked example: make a request testable
+
+![Four labeled parts of a ticket-classification prompt identify the task, category definitions, customer input, and required JSON output. The expected response is category billing.](visuals-diagrams/prompt-parts.png)
+
+*Separate the job, supporting context, input, and output contract so each can be checked.*
+
+A support team receives the message “I was charged twice.” A vague request such as “help with this” leaves the model to choose whether to explain, apologize, or classify. Start by stating the **task**: classify the ticket. Add **context** defining billing as a payment issue and delivery as a shipping issue. Mark the customer message as **input**, the data to process. Finally, specify the output: a JSON object with one field, `category`, whose value must be `billing` or `delivery`. JSON is a structured text format that software can parse.
+
+The expected response is `{"category":"billing"}`. Application code can check the field name and allowed value. Clear sections make an incorrect response easier to diagnose. They do not train the model, guarantee correctness, or turn untrusted customer text into instructions the application should obey.
+
 ### A practical template
 
 ```text
@@ -107,6 +117,18 @@ Output:
 Use several varied examples when the boundary between classes is not obvious. Include representative cases and avoid duplicates. The model can copy errors and bias from the examples.
 
 Few-shot prompting is **in-context learning**. The model adapts within the request. Its weights do not change, and the learned pattern does not persist after the context ends.
+
+### Worked example: zero-shot and few-shot use the same model
+
+![A zero-shot prompt contains category definitions and no examples. A few-shot prompt adds two ticket-to-label demonstrations before the same new ticket. Neither updates model weights.](visuals-diagrams/few-shot-labeling.png)
+
+*A “shot” is a demonstration in the prompt, not a training run.*
+
+Suppose a ticket classifier must return `billing` for payment issues or `delivery` for shipping issues. The new ticket is “I was charged again.” In a **zero-shot** prompt, provide those category definitions and the ticket, but no completed examples. The model may already identify the expected label, `billing`.
+
+A **few-shot** prompt includes the same instructions plus demonstrations: “I paid twice” → `billing`, and “Where is my parcel?” → `delivery`. Then present the new ticket. The examples show how inputs map to outputs, which can help with unfamiliar categories or formats. They do not guarantee a better result; poor examples can teach the wrong pattern.
+
+Both requests use the same model weights. The difference is the context sent for this request. Fine-tuning instead runs a training process that updates weights using a curated dataset. Test both prompt versions on fresh tickets before choosing one.
 
 ### Chain-of-thought
 

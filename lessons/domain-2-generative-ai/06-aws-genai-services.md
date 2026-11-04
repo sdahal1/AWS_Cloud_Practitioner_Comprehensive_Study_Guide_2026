@@ -31,6 +31,14 @@ These products can work together. Strands can define agent behavior, Bedrock can
 | Strands Agents | Open-source, model-driven SDK for agents with tools, memory, MCP support, and multi-agent graph, swarm, and workflow patterns | Managed infrastructure that operates the agent |
 | Amazon Bedrock AgentCore | Composable managed capabilities for agent loops, runtime, tools, identity, memory, policy, observability, evaluation, optimization, payments, and governed discovery | The model itself or only an agent-development SDK |
 
+### Visual: different levels of managed AI
+
+The layers below show a useful choice: consume an AI capability, build an application around foundation models, or manage more of the model-development workflow. For example, a team can extract receipt text with Textract, summarize that text with a model through Bedrock, or use SageMaker AI when it needs to train and host a custom model. One application can combine several layers.
+
+![A historical AWS AI service map groups generative-AI products, task-specific services for text, vision, search, speech, chat, and recommendations, and the SageMaker model-development platform.](visuals-diagrams/aws-ai-service-layers-2024.png)
+
+*Source: 2024 personal study notes, PDF p. 24. This is a historical service map, not a current availability list. It contains older Amazon Q branding and services such as Kendra and DeepRacer whose availability has changed. Use the service-selection table above and the linked current AWS documentation for today's product names and choices. The layers describe roles rather than strict boundaries between services.*
+
 ### Amazon Bedrock
 
 Amazon Bedrock provides managed access to models from Amazon and other providers. Application teams can invoke supported message models through a common interface such as the Converse API. Model capability and regional availability vary, so verify the [supported-model table](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html).
@@ -55,6 +63,16 @@ A useful exam distinction:
 - Bedrock: invoke managed FMs and use managed GenAI building blocks.
 - SageMaker AI: own the model-development and hosting workflow.
 - JumpStart: start that SageMaker workflow from a pretrained model.
+
+### Worked example: model access versus model development
+
+![A decision tree separates invoking an existing foundation model, illustrated by summarizing support notes with Amazon Bedrock, from controlling custom training and hosting with Amazon SageMaker AI. JumpStart appears inside SageMaker as a pretrained starting point.](visuals-diagrams/aws-platform-choice.png)
+
+*The decision describes a starting point based on required control; the platforms have overlapping capabilities.*
+
+Two teams want AI capabilities but need different control. Team A already has support notes and wants an existing foundation model to summarize them through a managed **API**, an interface an application calls. **Amazon Bedrock** fits that starting point because the requirement centers on invoking managed foundation models and using generative-AI features.
+
+Team B needs to run its own training algorithm, choose training resources, and deploy the resulting model to an endpoint. **Amazon SageMaker AI** fits that model-development and hosting workflow. An endpoint is an address where an application sends inference requests. If Team B can begin with a pretrained model instead, **SageMaker JumpStart** can shorten discovery and deployment within the same SageMaker environment. JumpStart does not turn that workflow into Bedrock’s managed model API. The key difference is the requested control, rather than simply whether both projects involve AI.
 
 ### Amazon Quick
 
@@ -81,6 +99,16 @@ Amazon Bedrock AgentCore is a composable platform for building, connecting, oper
 - **Optimization:** analyzes production traces for failure, intent, and trajectory insights, proposes improvements, and validates candidates with batch evaluation or A/B tests before approval.
 
 Choose the smallest set of AgentCore capabilities that the workload needs. Availability, preview status, Regions, and pricing can differ by capability.
+
+### Worked example: tracing an order-status agent
+
+![A request to track order 4821 enters a Strands agent loop hosted in AgentCore Runtime. The loop calls a separate Amazon Bedrock model API and requests get_order(4821). Authorization and validation allow read-only access to an order API, which returns in transit. AgentCore Harness is noted as an alternative managed-loop option.](visuals-diagrams/agent-service-roles.png)
+
+*This is one possible custom-agent architecture. The framework, model service, runtime, and tool authorization perform different jobs.*
+
+A user asks an agent to **“Track order 4821.”** A developer uses **Strands Agents**, a software development kit, to define the loop that exchanges information with a model, chooses tools, and observes results. In this example, **AgentCore Runtime** hosts that custom agent code. The loop calls an **Amazon Bedrock model API** separately; Runtime is not hosting the foundation model itself.
+
+The model proposes `get_order(4821)`. Before execution, the application validates the argument and checks that the caller may read this order. The order API returns **“in transit,”** which becomes context for the agent’s response. Read permission does not authorize cancellation or deletion. A framework alone does not provide this authorization or production hosting. As a different implementation choice, **AgentCore Harness** can supply a managed agent loop. These components are roles in a design, not interchangeable names for one service.
 
 ## Advantages of AWS GenAI services
 

@@ -78,6 +78,16 @@ Amazon Augmented AI (Amazon A2I) can route low-confidence predictions or sampled
 
 Calculate performance for relevant groups and intersections, such as age plus language. Compare false positives, false negatives, calibration, refusal rates, and error severity. Small groups produce uncertain estimates, so report sample size and confidence rather than claiming certainty from a handful of examples.
 
+### Worked example: the average hides a language gap
+
+![A bookshop assistant answers 855 of 900 English questions correctly and 60 of 100 Spanish questions correctly. The combined accuracy is 91.5 percent, but subgroup accuracy is 95 percent versus 60 percent.](visuals-diagrams/subgroup-fairness.png)
+
+*The overall result weights the larger group more heavily; subgroup counts and rates reveal the gap.*
+
+A bookshop tests its assistant on 1,000 questions about opening hours and book availability. Of 900 English questions, 855 receive correct answers. Of 100 Spanish questions, only 60 do. **Accuracy** means correct answers divided by all answers: the overall score is 915 ÷ 1,000 = **91.5%**. That attractive average hides a large difference: **95%** for English and **60%** for Spanish.
+
+A **subgroup** is a relevant slice of the users or test cases. Here, language defines the slices. The team inspects the 40 Spanish errors, checks translation quality and source coverage, and gathers more representative examples before changing the system. It then repeats the subgroup evaluation. These counts reveal unequal performance; they do not establish its cause or prove that any particular remedy will work. Sample size and the agreed fairness goal still matter.
+
 ### Balanced and curated datasets
 
 A balanced dataset gives relevant classes or groups enough representation for the task. Curation removes duplicates, mislabeled records, prohibited content, and data without valid rights. Balance does not require equal counts in every case. The target distribution should match the defined fairness goal and deployment context.
@@ -125,6 +135,18 @@ Pin a numbered guardrail version in production. `DRAFT` can change. Synchronous 
 For Knowledge Bases, guardrails evaluate the augmented input and generated response in `RetrieveAndGenerate`. They do not sanitize raw source text returned in `citations[].retrievedReferences[]`. An application that displays or logs retrieved references must enforce authorization and handle sensitive content separately.
 
 Guardrail filtering does not make logs safe. Model invocation logs can contain the original prompt and response. Encrypt logs with AWS KMS, restrict access with IAM, set retention, and consider whether payload logging is necessary.
+
+### Worked example: a café assistant needs several checkpoints
+
+![A café menu assistant uses four checkpoints: repair source data, ground an answer in the current menu, filter sensitive content, and ask a person about live stock. Each checkpoint addresses a different failure.](visuals-diagrams/responsible-ai-layers.png)
+
+*A filter operates on content; it cannot repair missing source data or establish facts the source does not contain.*
+
+A customer asks a café assistant, “Can I buy lemon cake today?” The current menu lists lemon cake, but it contains no live stock count. An older menu also includes a staff email address. Four separate controls address four different risks.
+
+First, **data curation** removes outdated documents and corrects missing translations. Second, **grounding** ties the answer to the current menu: “Lemon cake is listed” is supported, while “There are five slices left” is not. Third, a configured sensitive-information filter can mask a detected staff email if it appears in the response. Fourth, a human handles the unanswered stock question.
+
+The result is a narrower, useful answer: “Lemon cake is on the menu; please ask staff about today's stock.” None of these steps replaces the others. Masking an email does not verify inventory, and a human escalation does not repair the source collection.
 
 ## Legal, intellectual-property, and trust risks
 

@@ -52,6 +52,58 @@ A tax calculation is deterministic. A tax document classifier is predictive. The
 
 Forecasting often uses time-series methods. Fraud systems often use classification or anomaly detection. Read the requested output instead of choosing a technique from the industry alone.
 
+![A decision map connects target values and output types to supervised classification or regression and unsupervised clustering or anomaly detection.](visuals-diagrams/machine-learning-problem-types.png)
+
+*Source: 2024 study notes, PDF p. 10. Start with the desired output and whether training examples have target answers. This is a simplified map: anomaly detection can also use supervised or semi-supervised methods when suitable labels are available.*
+
+### Known categories versus numerical predictions
+
+![Supervised learning branches into binary classification, multiclass classification, and regression, with fraud, support routing, and share-price examples.](visuals-diagrams/supervised-regression-and-classification.png)
+
+*Source: 2024 study notes, PDF p. 8. Binary classification chooses between two categories; multiclass classification chooses among more than two. Regression predicts a numerical quantity, which can include decimals—the original heading's integer example does not mean regression is limited to whole numbers.*
+
+### Worked example: three event questions, three outputs
+
+![A session-duration question produces 37.5 minutes using regression. An equipment request produces Laptop from known Laptop and Monitor labels using classification. Similar attendee interests produce newly discovered groups using clustering.](visuals-diagrams/ml-output-types.png)
+
+*The input’s subject is less decisive than whether the required answer is a number, a known label, or an unknown grouping.*
+
+An event organizer has three questions. First, “How long will this session last?” Historical sessions include their measured durations. A model predicts **37.5 minutes** for the new session. That numerical estimate fits **regression**, which predicts a quantity rather than selecting a category.
+
+Second, an equipment request must receive one of two existing labels: **Laptop** or **Monitor**. A model assigns **Laptop**. That is **classification**, because the possible categories were defined before the prediction. Third, the organizer wants to find attendees with similar interests without naming the groups in advance. **Clustering** discovers those groups from similarity in the input data.
+
+All three problems concern the same event, but they need different outputs. A classifier could predict duration ranges only if the requirement changed to predefined categories such as “short” and “long.” It would then answer a different question from the precise duration estimate.
+
+### Anomaly detection: unusual does not automatically mean wrong
+
+![A scatter plot of vehicle speeds highlights readings far from the usual pattern as possible indicators of speed-camera failure.](visuals-diagrams/anomaly-detection-speed-camera.png)
+
+*Source: 2024 study notes, PDF p. 9. A camera suddenly reporting several cars at 240 mph should trigger investigation. An unusual reading could reflect a fault or a real event; the anomaly score alone does not establish the cause.*
+
+### Optional algorithm examples: supervised prediction
+
+The following historical diagrams connect problem types to examples of SageMaker algorithms. They provide additional context, not an algorithm list to memorize for this lesson. The foundational decision is still whether the application needs a category, a quantity, a grouping, or another output.
+
+![A supervised-learning overview connects classification and regression to examples including Linear Learner, factorization machines, XGBoost, and k-nearest neighbors.](visuals-diagrams/sagemaker-supervised-algorithms-overview.png)
+
+*Source: 2024 study notes, PDF p. 41. Different algorithms can solve the same type of problem. Predicting a house price and assigning a support-ticket category require different outputs even when an algorithm family supports both.*
+
+![A second supervised-learning map distinguishes binary and multiclass classification, regression, and recommendation examples.](visuals-diagrams/sagemaker-supervised-algorithms-detailed.png)
+
+*Source: 2024 study notes, PDF p. 60. This historical map adds recommendation as another application, such as ranking products a customer might like. It illustrates possible choices rather than an exhaustive set of supported algorithms.*
+
+### Optional algorithm examples: discovering patterns
+
+Clustering groups similar records; topic modeling discovers recurring themes in documents; dimensionality reduction represents data using fewer features. For example, a team could discover themes in unlabeled event feedback before deciding which topics deserve follow-up.
+
+![A historical diagram maps clustering, topic modeling, embeddings, anomaly detection, and dimensionality reduction to example algorithms. Its placement of Object2Vec under unsupervised learning needs the correction below.](visuals-diagrams/sagemaker-unsupervised-algorithms-overview-legacy.png)
+
+*Source: 2024 study notes, PDF p. 42. K-means illustrates clustering and PCA illustrates dimensionality reduction. Correction: the diagram groups Object2Vec too broadly under unsupervised learning; Object2Vec trains on pairs of inputs with relationship labels or similarity scores.*
+
+![A second historical pattern-discovery map shows K-means, LDA, Object2Vec, Random Cut Forest, IP Insights, and PCA.](visuals-diagrams/sagemaker-unsupervised-algorithms-detailed-legacy.png)
+
+*Source: 2024 study notes, PDF p. 60. This alternate map repeats the same Object2Vec simplification. Learning embeddings does not by itself make a method unsupervised; the training data and learning objective determine that distinction. See the [AWS Object2Vec input requirements](https://docs.aws.amazon.com/sagemaker/latest/dg/object2vec.html).*
+
 ## Real-world application map
 
 | Application | Input and outcome | Exam cue |
@@ -64,6 +116,30 @@ Forecasting often uses time-series methods. Fraud systems often use classificati
 | Forecasting | Predict future values from history | Demand, sales, capacity |
 | Knowledge base | Retrieve relevant organization information for a question | Answers grounded in internal documents |
 | Agentic AI | Plan and use tools to complete a goal | Update, book, submit, or resolve |
+
+### Text and speech: identify the transformation
+
+Classifying a review, translating a sentence, and transcribing a recording are separate tasks. The next two historical diagrams show custom-model algorithm examples; the managed-service table below offers ready-made capabilities for many of these needs.
+
+![Text and speech tasks branch into text classification, word embeddings, machine translation, topic modeling, and sequence-to-sequence examples.](visuals-diagrams/sagemaker-text-and-speech-algorithms-overview.png)
+
+*Source: 2024 study notes, PDF p. 43. “What topic is this review about?” differs from “Translate this review into French.” Match the required transformation before selecting a model or service.*
+
+![A detailed text-processing map separates text classification, Word2Vec embeddings, machine translation, and topic modeling.](visuals-diagrams/sagemaker-text-algorithms-detailed.png)
+
+*Source: 2024 study notes, PDF p. 61. Word embeddings represent relationships between words; a classifier assigns labels; translation produces text in another language. The historical algorithm names are optional implementation context.*
+
+### Images and time series: identify the output's shape
+
+For a photo of a parking lot, **image classification** can answer “occupied,” **object detection** can locate each car with a bounding box, and **semantic segmentation** can label each pixel as road, car, or another category. **Time-series forecasting** instead predicts values along a timeline, such as parking demand tomorrow.
+
+![An image and time-series algorithm map separates image classification, object detection, semantic segmentation, and forecasting.](visuals-diagrams/sagemaker-image-and-time-series-algorithms-overview.png)
+
+*Source: 2024 study notes, PDF p. 42. The useful distinction is the requested result: a label, object locations, pixel labels, or future values. Framework and architecture names reflect the original notes.*
+
+![A historical custom-model map shows speech processing, image classification, object detection, semantic segmentation, and time-series forecasting examples.](visuals-diagrams/sagemaker-speech-image-time-series-algorithms-detailed.png)
+
+*Source: 2024 study notes, PDF p. 61. This alternate view compares data types and task-specific models. It is not a requirement to build these models; when a managed API already meets the need, the next section helps select it.*
 
 ## AWS managed AI and ML services
 
@@ -87,6 +163,16 @@ Related services may appear in scenarios. Amazon Rekognition analyzes images and
 - Lex manages conversational intents and dialog. A broad, generative assistant usually points toward a foundation-model service instead.
 - SageMaker AI is the custom ML platform. It is excessive when a ready-made API already matches the task.
 
+### Worked example: a spoken comment becomes sentiment
+
+![Recorded audio saying The workshop was helpful flows through Amazon Transcribe to a text transcript, then through Amazon Comprehend to an illustrative POSITIVE sentiment result. A separate reverse-direction path shows text through Amazon Polly to speech.](visuals-diagrams/managed-service-pipeline.png)
+
+*Each service receives the kind of input it understands; the shown transcript and sentiment are illustrative outputs.*
+
+A participant records the sentence **“The workshop was helpful.”** The organizer needs searchable words and an indication of sentiment. First, **Amazon Transcribe** converts the audio into a text transcript. A transcript is a written representation of speech. Second, the application sends that text to **Amazon Comprehend**, which can analyze sentiment: the attitude expressed in the text. The diagram shows an illustrative **POSITIVE** result.
+
+The stages solve separate problems. Transcribing the recording makes the words available, but transcription alone does not perform the requested sentiment analysis. Comprehend receives text rather than the original audio. **Amazon Polly** goes in the opposite direction: it converts text into spoken audio, so it would fit a requirement to read the transcript aloud. A custom speech model could also be developed, but it adds model-development work when a managed capability already fits.
+
 ## Traditional ML or a foundation model
 
 | Constraint or goal | Better starting point | Reason |
@@ -99,6 +185,10 @@ Related services may appear in scenarios. Amazon Rekognition analyzes images and
 | Multi-step work through tools | FM-based agent | The model can interpret intent and choose actions |
 
 Regulation does not ban foundation models by itself. It raises the need for traceability, testing, privacy controls, and human oversight. If a simpler model meets the requirement with clearer explanations, the simpler model has the advantage.
+
+![Traditional task-specific ML models are compared with a foundation model that is pretrained and adapted for multiple tasks such as generation, summarization, extraction, and question answering.](visuals-diagrams/traditional-ml-vs-foundation-models.png)
+
+*Source: 2024 study notes, PDF p. 78. A narrow model may predict fraud, while one foundation model can support several language tasks. The data labels are simplified: traditional ML can also be unsupervised, and foundation-model adaptation can use labeled examples.*
 
 ## Scenario practice
 
