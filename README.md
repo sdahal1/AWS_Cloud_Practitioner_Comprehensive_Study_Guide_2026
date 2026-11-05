@@ -8,6 +8,15 @@ This independent community guide contains **14 task-based lessons and all 69 obj
 
 Each lesson includes concept diagrams with text descriptions and beginner-friendly worked examples. Images are stored in a `visuals-diagrams` folder inside each domain and embedded beside the relevant explanation, so they display directly when reading a lesson on GitHub. Historical study-note figures include captions explaining their context or limitations.
 
+## Resources from Carolina Women+ in Tech Workshop
+
+- [Kiro](https://kiro.dev?trk=551ca555-cacd-46b2-b208-a024c643765c&sc_channel=el): Open the study guide in Kiro, ask for explanations of lesson concepts, and generate practice questions. Check generated explanations against the cited sources.
+  - [Find free Kiro credits](https://docs.google.com/spreadsheets/d/1pF2Kj2Al66o3iE08GCb7Mwgxad5viWc-Y0WEb7-ZvMM): Open the workshop spreadsheet to find available free Kiro credit offers.
+- [AWS Builder Center](https://builder.aws.com?trk=551ca555-cacd-46b2-b208-a024c643765c&sc_channel=el): Read and publish technical articles, explore workshops and learning resources, follow other builders, and join communities.
+- [AWS Skill Builder](https://skillbuilder.aws?trk=551ca555-cacd-46b2-b208-a024c643765c&sc_channel=el): Continue your AIF-C01 preparation with official courses and practice resources. Some resources require a subscription, so check the access label before starting.
+- [Create an AWS Builder ID](https://signin.aws.amazon.com/signup?request_type=builderId&trk=551ca555-cacd-46b2-b208-a024c643765c&sc_channel=el): Create the identity you can use to sign in to AWS Builder Center, join the workshop community, and access other AWS builder services. An AWS Builder ID is separate from an AWS account used to create AWS resources.
+- [Join the Carolina Women+ in Tech Space in Builder Center](https://builder.aws.com/connect/space/338fdb7b-30fe-3091-b0b3-b0f9c8ca189e?inviteId=2e5c644b-ca08-49d3-867c-368c096b486d&trk=551ca555-cacd-46b2-b208-a024c643765c&sc_channel=el): Share a learning goal or question, find a certification study partner, connect with project or article-review partners, and arrange a follow-up check-in.
+
 ## Domain guide
 
 | Domain | Weight | Tasks | Objectives | Lesson folder |
